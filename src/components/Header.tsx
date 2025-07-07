@@ -36,14 +36,6 @@ const Header = () => {
           </nav>
           
           <div className="flex items-center gap-4">
-            <Button 
-              variant="medical" 
-              asChild
-              className="hidden md:inline-flex"
-            >
-              <Link to="/predict">Start Diagnosis</Link>
-            </Button>
-            
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="h-5 w-5" />
             </Button>
