@@ -33,6 +33,14 @@ const Header = () => {
             >
               Symptom Checker
             </Link>
+            <Link 
+              to="/about" 
+              className={`font-medium transition-colors hover:text-primary ${
+                isActive('/about') ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              About Us
+            </Link>
           </nav>
           
           <div className="flex items-center gap-4">
