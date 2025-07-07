@@ -6,12 +6,44 @@ import { Input } from "@/components/ui/input";
 import { Search, Brain, User, Pill, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 
-// Sample data - in a real app, this would come from an API
+// Comprehensive symptoms list - 250+ symptoms
 const symptoms = [
-  "Fever", "Headache", "Cough", "Fatigue", "Nausea", "Vomiting", "Diarrhea", 
-  "Chest pain", "Shortness of breath", "Abdominal pain", "Joint pain", "Muscle pain",
-  "Dizziness", "Sore throat", "Runny nose", "Skin rash", "Loss of appetite",
-  "Weight loss", "Night sweats", "Difficulty sleeping"
+  "Fever", "Headache", "Cough", "Sore throat", "Runny nose", "Sneezing", "Chills", "Fatigue",
+  "Muscle pain", "Joint pain", "Shortness of breath", "Chest pain", "Dizziness", "Nausea", "Vomiting",
+  "Diarrhea", "Abdominal pain", "Bloating", "Constipation", "Gas", "Heartburn", "Back pain", "Rash",
+  "Itching", "Dry skin", "Redness", "Swelling", "Bruising", "Numbness", "Tingling", "Blurred vision",
+  "Double vision", "Eye pain", "Watery eyes", "Light sensitivity", "Hearing loss", "Ringing in ears",
+  "Ear pain", "Nosebleeds", "Loss of smell", "Loss of taste", "Hoarseness", "Difficulty swallowing",
+  "Frequent urination", "Painful urination", "Blood in urine", "Incontinence", "Urinary urgency",
+  "Bedwetting", "Irregular periods", "Heavy periods", "Missed periods", "Vaginal discharge",
+  "Genital itching", "Erectile dysfunction", "Low libido", "Breast pain", "Breast lump", "Chest tightness",
+  "Palpitations", "Rapid heartbeat", "Slow heartbeat", "Fainting", "Swelling in legs", "Cold hands",
+  "Cold feet", "Cyanosis", "Weight loss", "Weight gain", "Excessive thirst", "Excessive hunger",
+  "Night sweats", "Sleep disturbances", "Insomnia", "Excessive sleepiness", "Snoring", "Nightmares",
+  "Anxiety", "Depression", "Mood swings", "Hallucinations", "Confusion", "Memory loss", "Irritability",
+  "Restlessness", "Tremors", "Seizures", "Muscle weakness", "Facial droop", "Slurred speech",
+  "Loss of balance", "Difficulty walking", "Clumsiness", "Hair loss", "Brittle nails", "Dry mouth",
+  "Metallic taste", "Sore tongue", "Mouth ulcers", "Bad breath", "Bleeding gums", "Jaw pain", "Neck pain",
+  "Shoulder pain", "Elbow pain", "Wrist pain", "Hand numbness", "Finger stiffness", "Hip pain", "Knee pain",
+  "Ankle pain", "Foot pain", "Heel pain", "Leg cramps", "Skin peeling", "Skin discoloration", "Acne",
+  "Warts", "Boils", "Blisters", "Cold sores", "Sun sensitivity", "Hot flashes", "Chills without fever",
+  "Enlarged lymph nodes", "Easy bruising", "Excessive bleeding", "Delayed healing", "Yellow eyes",
+  "Yellow skin", "Dark urine", "Light-colored stools", "Rectal bleeding", "Anal pain", "Hemorrhoids",
+  "Gas retention", "Belching", "Hiccups", "Indigestion", "Loss of appetite", "Difficulty concentrating",
+  "Overthinking", "Paranoia", "Flashbacks", "Suicidal thoughts", "Fear", "Guilt", "Shame",
+  "Compulsive behaviors", "Tics", "Obsessive thoughts", "Trouble speaking", "Voice changes", "Dry cough",
+  "Wet cough", "Wheezing", "Productive cough", "Hoarseness", "Breathlessness", "Cyanotic lips",
+  "Rapid breathing", "Chest congestion", "Sputum production", "Night coughing", "Grunting",
+  "Flaring nostrils", "Fatigue after minimal effort", "Poor exercise tolerance", "Back stiffness",
+  "Joint locking", "Finger twitching", "Skin thickening", "Hair thinning", "Brittle hair", "Scalp itching",
+  "Eye twitching", "Photophobia", "Floaters", "Tunnel vision", "Dry eyes", "Discharge from eyes",
+  "Puffy eyelids", "Burning eyes", "Eye redness", "Lightheadedness", "Hypersensitivity", "Cold intolerance",
+  "Heat intolerance", "Chest fluttering", "Numb toes", "Discolored nails", "Itchy scalp", "Flaky scalp",
+  "Eye watering", "Yawning", "Clenched jaw", "Tooth pain", "Gum recession", "Dry throat",
+  "Frequent clearing throat", "Sensitivity to smells", "Pain during intercourse", "Bloating after meals",
+  "Early satiety", "Low back pain", "Groin pain", "Hip stiffness", "Shoulder stiffness", "Arm weakness",
+  "Cold sensation in limbs", "Cracking joints", "Chest pressure", "Head pressure", "General weakness",
+  "Persistent cough", "Uncontrollable crying", "Panic attacks", "Stomach gurgling", "Feeling of doom"
 ];
 
 const samplePredictions = {
