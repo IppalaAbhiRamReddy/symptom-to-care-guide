@@ -1,77 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Search, Brain, User, Pill, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
+import { symptoms } from "@/data/symptomsDatabase";
+import { NaiveBayesClassifier, PredictionResult } from "@/utils/naiveBayesModel";
+import { trainingData, validateTrainingData } from "@/data/trainingData";
 
-// Comprehensive symptoms list - 250+ symptoms
-const symptoms = [
-  "Fever", "Headache", "Cough", "Sore throat", "Runny nose", "Sneezing", "Chills", "Fatigue",
-  "Muscle pain", "Joint pain", "Shortness of breath", "Chest pain", "Dizziness", "Nausea", "Vomiting",
-  "Diarrhea", "Abdominal pain", "Bloating", "Constipation", "Gas", "Heartburn", "Back pain", "Rash",
-  "Itching", "Dry skin", "Redness", "Swelling", "Bruising", "Numbness", "Tingling", "Blurred vision",
-  "Double vision", "Eye pain", "Watery eyes", "Light sensitivity", "Hearing loss", "Ringing in ears",
-  "Ear pain", "Nosebleeds", "Loss of smell", "Loss of taste", "Hoarseness", "Difficulty swallowing",
-  "Frequent urination", "Painful urination", "Blood in urine", "Incontinence", "Urinary urgency",
-  "Bedwetting", "Irregular periods", "Heavy periods", "Missed periods", "Vaginal discharge",
-  "Genital itching", "Erectile dysfunction", "Low libido", "Breast pain", "Breast lump", "Chest tightness",
-  "Palpitations", "Rapid heartbeat", "Slow heartbeat", "Fainting", "Swelling in legs", "Cold hands",
-  "Cold feet", "Cyanosis", "Weight loss", "Weight gain", "Excessive thirst", "Excessive hunger",
-  "Night sweats", "Sleep disturbances", "Insomnia", "Excessive sleepiness", "Snoring", "Nightmares",
-  "Anxiety", "Depression", "Mood swings", "Hallucinations", "Confusion", "Memory loss", "Irritability",
-  "Restlessness", "Tremors", "Seizures", "Muscle weakness", "Facial droop", "Slurred speech",
-  "Loss of balance", "Difficulty walking", "Clumsiness", "Hair loss", "Brittle nails", "Dry mouth",
-  "Metallic taste", "Sore tongue", "Mouth ulcers", "Bad breath", "Bleeding gums", "Jaw pain", "Neck pain",
-  "Shoulder pain", "Elbow pain", "Wrist pain", "Hand numbness", "Finger stiffness", "Hip pain", "Knee pain",
-  "Ankle pain", "Foot pain", "Heel pain", "Leg cramps", "Skin peeling", "Skin discoloration", "Acne",
-  "Warts", "Boils", "Blisters", "Cold sores", "Sun sensitivity", "Hot flashes", "Chills without fever",
-  "Enlarged lymph nodes", "Easy bruising", "Excessive bleeding", "Delayed healing", "Yellow eyes",
-  "Yellow skin", "Dark urine", "Light-colored stools", "Rectal bleeding", "Anal pain", "Hemorrhoids",
-  "Gas retention", "Belching", "Hiccups", "Indigestion", "Loss of appetite", "Difficulty concentrating",
-  "Overthinking", "Paranoia", "Flashbacks", "Suicidal thoughts", "Fear", "Guilt", "Shame",
-  "Compulsive behaviors", "Tics", "Obsessive thoughts", "Trouble speaking", "Voice changes", "Dry cough",
-  "Wet cough", "Wheezing", "Productive cough", "Hoarseness", "Breathlessness", "Cyanotic lips",
-  "Rapid breathing", "Chest congestion", "Sputum production", "Night coughing", "Grunting",
-  "Flaring nostrils", "Fatigue after minimal effort", "Poor exercise tolerance", "Back stiffness",
-  "Joint locking", "Finger twitching", "Skin thickening", "Hair thinning", "Brittle hair", "Scalp itching",
-  "Eye twitching", "Photophobia", "Floaters", "Tunnel vision", "Dry eyes", "Discharge from eyes",
-  "Puffy eyelids", "Burning eyes", "Eye redness", "Lightheadedness", "Hypersensitivity", "Cold intolerance",
-  "Heat intolerance", "Chest fluttering", "Numb toes", "Discolored nails", "Itchy scalp", "Flaky scalp",
-  "Eye watering", "Yawning", "Clenched jaw", "Tooth pain", "Gum recession", "Dry throat",
-  "Frequent clearing throat", "Sensitivity to smells", "Pain during intercourse", "Bloating after meals",
-  "Early satiety", "Low back pain", "Groin pain", "Hip stiffness", "Shoulder stiffness", "Arm weakness",
-  "Cold sensation in limbs", "Cracking joints", "Chest pressure", "Head pressure", "General weakness",
-  "Persistent cough", "Uncontrollable crying", "Panic attacks", "Stomach gurgling", "Feeling of doom"
-];
-
-const samplePredictions = {
-  "Fever,Headache,Fatigue": {
-    disease: "Common Cold",
-    confidence: 85,
-    doctor: {
-      type: "General Practitioner",
-      description: "A primary care physician who can diagnose and treat common illnesses like colds and flu."
-    },
-    medicines: ["Paracetamol", "Vitamin C", "Rest and fluids"]
-  },
-  "Chest pain,Shortness of breath": {
-    disease: "Respiratory Infection",
-    confidence: 78,
-    doctor: {
-      type: "Pulmonologist", 
-      description: "A specialist in lung and respiratory system disorders."
-    },
-    medicines: ["Bronchodilator", "Antibiotics", "Cough suppressant"]
-  }
-};
+// Initialize Naive Bayes classifier
+let naiveBayesModel: NaiveBayesClassifier | null = null;
 
 const PredictDisease = () => {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [prediction, setPrediction] = useState<any>(null);
+  const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [modelInitialized, setModelInitialized] = useState(false);
+
+  // Initialize the Naive Bayes model
+  useEffect(() => {
+    const initializeModel = () => {
+      try {
+        if (validateTrainingData()) {
+          naiveBayesModel = new NaiveBayesClassifier(trainingData);
+          setModelInitialized(true);
+          console.log("Naive Bayes model initialized successfully");
+        } else {
+          console.error("Training data validation failed");
+        }
+      } catch (error) {
+        console.error("Error initializing Naive Bayes model:", error);
+      }
+    };
+
+    initializeModel();
+  }, []);
 
   const filteredSymptoms = symptoms.filter(symptom =>
     symptom.toLowerCase().includes(searchTerm.toLowerCase())
@@ -86,24 +51,33 @@ const PredictDisease = () => {
   };
 
   const handlePredict = () => {
+    if (!naiveBayesModel || !modelInitialized) {
+      console.error("Naive Bayes model not initialized");
+      return;
+    }
+
     setIsLoading(true);
     
-    // Simulate API call
+    // Simulate processing time for better UX
     setTimeout(() => {
-      const key = selectedSymptoms.slice(0, 2).join(",");
-      const result = samplePredictions[key as keyof typeof samplePredictions] || {
-        disease: "General Health Check Required",
-        confidence: 65,
-        doctor: {
-          type: "General Practitioner",
-          description: "A primary care physician for general health assessment."
-        },
-        medicines: ["Multivitamin", "Rest", "Healthy diet"]
-      };
-      
-      setPrediction(result);
+      try {
+        const result = naiveBayesModel!.predict(selectedSymptoms);
+        setPrediction(result);
+      } catch (error) {
+        console.error("Error making prediction:", error);
+        // Fallback prediction
+        setPrediction({
+          disease: "Unable to diagnose",
+          confidence: 50,
+          doctor: {
+            type: "General Practitioner",
+            description: "Please consult a healthcare professional for proper diagnosis."
+          },
+          medicines: ["Consult doctor", "Monitor symptoms", "Rest"]
+        });
+      }
       setIsLoading(false);
-    }, 1500);
+    }, 1000);
   };
 
   return (
@@ -174,13 +148,19 @@ const PredictDisease = () => {
 
                 <Button
                   onClick={handlePredict}
-                  disabled={selectedSymptoms.length === 0 || isLoading}
+                  disabled={selectedSymptoms.length === 0 || isLoading || !modelInitialized}
                   className="w-full"
                   variant="medical"
                 >
-                  {isLoading ? "Analyzing..." : "Predict Disease"}
+                  {isLoading ? "Analyzing with AI..." : !modelInitialized ? "Loading AI Model..." : "Predict Disease"}
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
+                
+                {!modelInitialized && (
+                  <p className="text-sm text-muted-foreground text-center">
+                    Initializing AI prediction model...
+                  </p>
+                )}
               </CardContent>
             </Card>
 
