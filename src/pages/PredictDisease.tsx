@@ -207,27 +207,6 @@ const PredictDisease = () => {
                     </CardContent>
                   </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Pill className="h-5 w-5" />
-                        Suggested Treatment
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        {prediction.medicines.map((medicine: string, index: number) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-primary rounded-full"></div>
-                            <span>{medicine}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-4">
-                        ⚠️ This is for informational purposes only. Please consult a healthcare professional for proper diagnosis and treatment.
-                      </p>
-                    </CardContent>
-                  </Card>
                 </>
               )}
 
