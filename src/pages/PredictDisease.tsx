@@ -189,33 +189,48 @@ const PredictDisease = () => {
                             <TooltipTrigger asChild>
                               <div
                                 onClick={() => handleSymptomToggle(symptomData.name)}
-                                className={`group p-4 rounded-lg border cursor-pointer transition-all duration-200 hover:shadow-md ${
+                                className={`group p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:shadow-lg animate-fade-in ${
                                   selectedSymptoms.includes(symptomData.name)
-                                    ? 'bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]'
-                                    : 'bg-card hover:bg-accent border-border hover:border-primary/50'
+                                    ? 'bg-primary border-primary shadow-lg ring-2 ring-primary/20 scale-[1.02] text-primary-foreground' 
+                                    : 'bg-card hover:bg-accent border-border hover:border-primary/30 hover:scale-[1.01]'
                                 }`}
                               >
                                 <div className="flex items-center justify-between">
                                   <div className="flex-1">
-                                    <h3 className="font-medium text-sm leading-tight">
-                                      {symptomData.name}
-                                    </h3>
-                                    <p className={`text-xs mt-1 line-clamp-2 ${
+                                    <div className="flex items-center gap-2">
+                                      <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                                        selectedSymptoms.includes(symptomData.name)
+                                          ? 'bg-primary-foreground shadow-sm' 
+                                          : 'border-2 border-muted-foreground/30'
+                                      }`} />
+                                      <h3 className={`font-medium text-sm leading-tight ${
+                                        selectedSymptoms.includes(symptomData.name)
+                                          ? 'text-primary-foreground font-semibold' 
+                                          : 'text-foreground'
+                                      }`}>
+                                        {symptomData.name}
+                                      </h3>
+                                    </div>
+                                    <p className={`text-xs mt-2 line-clamp-2 transition-colors duration-300 ${
                                       selectedSymptoms.includes(symptomData.name) 
-                                        ? 'text-primary-foreground/80' 
+                                        ? 'text-primary-foreground/90' 
                                         : 'text-muted-foreground'
                                     }`}>
                                       {symptomData.description}
                                     </p>
                                   </div>
-                                  <Info className="h-4 w-4 ml-2 opacity-60 group-hover:opacity-100" />
+                                  <Info className={`h-4 w-4 ml-2 transition-all duration-300 ${
+                                    selectedSymptoms.includes(symptomData.name)
+                                      ? 'text-primary-foreground opacity-90' 
+                                      : 'opacity-60 group-hover:opacity-100'
+                                  }`} />
                                 </div>
                                 <Badge 
-                                  variant="secondary" 
-                                  className={`mt-2 text-xs ${
+                                  variant={selectedSymptoms.includes(symptomData.name) ? "outline" : "secondary"}
+                                  className={`mt-3 text-xs transition-all duration-300 ${
                                     selectedSymptoms.includes(symptomData.name) 
-                                      ? 'bg-primary-foreground/20 text-primary-foreground' 
-                                      : ''
+                                      ? 'bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30' 
+                                      : 'hover:bg-primary/10'
                                   }`}
                                 >
                                   {symptomData.category}
