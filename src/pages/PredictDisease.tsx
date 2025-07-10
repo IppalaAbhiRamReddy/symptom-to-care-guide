@@ -55,7 +55,7 @@ const PredictDisease = () => {
     setSelectedSymptoms(prev => 
       prev.includes(symptom) 
         ? prev.filter(s => s !== symptom)
-        : [...prev, symptom]
+        : prev.length < 4 ? [...prev, symptom] : prev
     );
   };
 
@@ -76,6 +76,8 @@ const PredictDisease = () => {
       try {
         const result = naiveBayesModel!.predict(selectedSymptoms);
         setPrediction(result);
+        // Clear all selected symptoms after prediction
+        setSelectedSymptoms([]);
       } catch (error) {
         console.error("Error making prediction:", error);
         // Fallback prediction
@@ -247,7 +249,7 @@ const PredictDisease = () => {
                       <div className="space-y-3 pt-4 border-t">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-lg">Selected Symptoms ({selectedSymptoms.length})</h3>
-                          <Badge variant="outline">{selectedSymptoms.length}/20 max</Badge>
+                          <Badge variant="outline">{selectedSymptoms.length}/4 max</Badge>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {selectedSymptoms.map((symptom) => (
