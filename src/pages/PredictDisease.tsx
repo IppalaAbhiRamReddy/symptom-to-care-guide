@@ -7,11 +7,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Search, Brain, User, Activity, ChevronRight, Info, Stethoscope, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 import { symptomsDatabase, symptoms } from "@/data/symptomsDatabase";
-import { NaiveBayesClassifier, PredictionResult } from "@/utils/naiveBayesModel";
+import { EnhancedMedicalDiagnosisModel, PredictionResult } from "@/utils/improvedMLModel";
 import { trainingData, validateTrainingData } from "@/data/trainingData";
 
-// Initialize Naive Bayes classifier
-let naiveBayesModel: NaiveBayesClassifier | null = null;
+// Initialize Enhanced ML Model
+let enhancedMLModel: EnhancedMedicalDiagnosisModel | null = null;
 
 const PredictDisease = () => {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -21,19 +21,19 @@ const PredictDisease = () => {
   const [modelInitialized, setModelInitialized] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  // Initialize the Naive Bayes model
+  // Initialize the Enhanced ML Model
   useEffect(() => {
     const initializeModel = () => {
       try {
         if (validateTrainingData()) {
-          naiveBayesModel = new NaiveBayesClassifier(trainingData);
+          enhancedMLModel = new EnhancedMedicalDiagnosisModel(trainingData);
           setModelInitialized(true);
-          console.log("Enhanced Naive Bayes model initialized successfully");
+          console.log("Enhanced Medical Diagnosis ML model initialized successfully");
         } else {
           console.error("Training data validation failed");
         }
       } catch (error) {
-        console.error("Error initializing Naive Bayes model:", error);
+        console.error("Error initializing Enhanced ML model:", error);
       }
     };
 
@@ -60,8 +60,8 @@ const PredictDisease = () => {
   };
 
   const handlePredict = () => {
-    if (!naiveBayesModel || !modelInitialized) {
-      console.error("Enhanced Naive Bayes model not initialized");
+    if (!enhancedMLModel || !modelInitialized) {
+      console.error("Enhanced ML model not initialized");
       return;
     }
 
@@ -74,8 +74,9 @@ const PredictDisease = () => {
     // Simulate processing time for better UX
     setTimeout(() => {
       try {
-        const result = naiveBayesModel!.predict(selectedSymptoms);
+        const result = enhancedMLModel!.predict(selectedSymptoms);
         setPrediction(result);
+        console.log("Prediction made with confidence:", result.confidence);
       } catch (error) {
         console.error("Error making prediction:", error);
         // Fallback prediction
@@ -90,7 +91,7 @@ const PredictDisease = () => {
         });
       }
       setIsLoading(false);
-    }, 1000);
+    }, 1500);
   };
 
   const clearSelection = () => {
@@ -285,12 +286,12 @@ const PredictDisease = () => {
                       ) : !modelInitialized ? (
                         <>
                           <Brain className="h-5 w-5 mr-2" />
-                          Loading AI Model...
+                          Loading Enhanced ML Model...
                         </>
                       ) : (
                         <>
                           <Brain className="h-5 w-5 mr-2" />
-                          Predict Condition
+                          Analyze with Enhanced AI
                           <ChevronRight className="h-5 w-5 ml-2" />
                         </>
                       )}
@@ -298,7 +299,7 @@ const PredictDisease = () => {
                     
                     {!modelInitialized && (
                       <p className="text-sm text-muted-foreground text-center">
-                        Initializing enhanced AI prediction model with improved accuracy...
+                        Loading Enhanced Medical Diagnosis ML Model with advanced accuracy algorithms...
                       </p>
                     )}
                   </CardContent>
@@ -338,7 +339,7 @@ const PredictDisease = () => {
                             </div>
                           </div>
                           <p className="text-muted-foreground">
-                            Based on your {selectedSymptoms.length} selected symptoms, our enhanced AI model suggests this is the most likely condition.
+                            Based on your {selectedSymptoms.length} selected symptoms, our Enhanced Medical ML Model suggests this is the most likely condition.
                           </p>
                         </div>
                       </CardContent>
