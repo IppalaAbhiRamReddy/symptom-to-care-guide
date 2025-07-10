@@ -247,7 +247,12 @@ const PredictDisease = () => {
                       <div className="space-y-3 pt-4 border-t">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-lg">Selected Symptoms ({selectedSymptoms.length})</h3>
-                          <Badge variant="outline">{selectedSymptoms.length}/4 max</Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline">{selectedSymptoms.length}/4 max</Badge>
+                            <Button variant="outline" size="sm" onClick={clearSelection}>
+                              Clear All
+                            </Button>
+                          </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {selectedSymptoms.map((symptom) => (
