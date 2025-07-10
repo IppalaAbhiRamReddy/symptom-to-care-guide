@@ -76,8 +76,6 @@ const PredictDisease = () => {
       try {
         const result = naiveBayesModel!.predict(selectedSymptoms);
         setPrediction(result);
-        // Clear all selected symptoms after prediction
-        setSelectedSymptoms([]);
       } catch (error) {
         console.error("Error making prediction:", error);
         // Fallback prediction
