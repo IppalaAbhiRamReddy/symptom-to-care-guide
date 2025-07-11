@@ -184,70 +184,73 @@ const PredictDisease = () => {
                     {/* Symptoms Grid */}
                     <div className="max-h-96 overflow-y-auto">
                       <div className="grid gap-3 md:grid-cols-2">
-                        {filteredSymptomsData.map((symptomData) => (
-                          <Tooltip key={symptomData.name}>
-                            <TooltipTrigger asChild>
-                              <div
-                                onClick={() => handleSymptomToggle(symptomData.name)}
-                                className={`group p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:shadow-lg animate-fade-in ${
-                                  selectedSymptoms.includes(symptomData.name)
-                                    ? 'bg-primary border-primary shadow-lg ring-2 ring-primary/20 scale-[1.02] text-primary-foreground' 
-                                    : 'bg-card hover:bg-accent border-border hover:border-primary/30 hover:scale-[1.01]'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                      <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                        selectedSymptoms.includes(symptomData.name)
-                                          ? 'bg-primary-foreground shadow-sm' 
-                                          : 'border-2 border-muted-foreground/30'
-                                      }`} />
-                                      <h3 className={`font-medium text-sm leading-tight ${
-                                        selectedSymptoms.includes(symptomData.name)
-                                          ? 'text-primary-foreground font-semibold' 
-                                          : 'text-foreground'
-                                      }`}>
-                                        {symptomData.name}
-                                      </h3>
-                                    </div>
-                                    <p className={`text-xs mt-2 line-clamp-2 transition-colors duration-300 ${
-                                      selectedSymptoms.includes(symptomData.name) 
-                                        ? 'text-primary-foreground/90' 
-                                        : 'text-muted-foreground'
-                                    }`}>
-                                      {symptomData.description}
-                                    </p>
-                                  </div>
-                                  <Info className={`h-4 w-4 ml-2 transition-all duration-300 ${
-                                    selectedSymptoms.includes(symptomData.name)
-                                      ? 'text-primary-foreground opacity-90' 
-                                      : 'opacity-60 group-hover:opacity-100'
-                                  }`} />
-                                </div>
-                                <Badge 
-                                  variant={selectedSymptoms.includes(symptomData.name) ? "outline" : "secondary"}
-                                  className={`mt-3 text-xs transition-all duration-300 ${
-                                    selectedSymptoms.includes(symptomData.name) 
-                                      ? 'bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30' 
-                                      : 'hover:bg-primary/10'
+                        {filteredSymptomsData.map((symptomData, index) => {
+                          const isSelected = selectedSymptoms.includes(symptomData.name);
+                          return (
+                            <Tooltip key={`${symptomData.name}-${symptomData.category}-${index}`}>
+                              <TooltipTrigger asChild>
+                                <div
+                                  onClick={() => handleSymptomToggle(symptomData.name)}
+                                  className={`group p-4 rounded-lg border cursor-pointer transition-all duration-300 hover:shadow-lg animate-fade-in ${
+                                    isSelected
+                                      ? 'bg-primary border-primary shadow-lg ring-2 ring-primary/20 scale-[1.02] text-primary-foreground' 
+                                      : 'bg-card hover:bg-accent border-border hover:border-primary/30 hover:scale-[1.01]'
                                   }`}
                                 >
-                                  {symptomData.category}
-                                </Badge>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-sm">
-                              <div className="space-y-2">
-                                <h4 className="font-semibold">{symptomData.name}</h4>
-                                <p className="text-sm">{symptomData.description}</p>
-                                <Badge variant="outline" className="text-xs">
-                                  Category: {symptomData.category}
-                                </Badge>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        ))}
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2">
+                                        <div className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                                          isSelected
+                                            ? 'bg-primary-foreground shadow-sm' 
+                                            : 'border-2 border-muted-foreground/30'
+                                        }`} />
+                                        <h3 className={`font-medium text-sm leading-tight ${
+                                          isSelected
+                                            ? 'text-primary-foreground font-semibold' 
+                                            : 'text-foreground'
+                                        }`}>
+                                          {symptomData.name}
+                                        </h3>
+                                      </div>
+                                      <p className={`text-xs mt-2 line-clamp-2 transition-colors duration-300 ${
+                                        isSelected 
+                                          ? 'text-primary-foreground/90' 
+                                          : 'text-muted-foreground'
+                                      }`}>
+                                        {symptomData.description}
+                                      </p>
+                                    </div>
+                                    <Info className={`h-4 w-4 ml-2 transition-all duration-300 ${
+                                      isSelected
+                                        ? 'text-primary-foreground opacity-90' 
+                                        : 'opacity-60 group-hover:opacity-100'
+                                    }`} />
+                                  </div>
+                                  <Badge 
+                                    variant={isSelected ? "outline" : "secondary"}
+                                    className={`mt-3 text-xs transition-all duration-300 ${
+                                      isSelected 
+                                        ? 'bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30' 
+                                        : 'hover:bg-primary/10'
+                                    }`}
+                                  >
+                                    {symptomData.category}
+                                  </Badge>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-sm">
+                                <div className="space-y-2">
+                                  <h4 className="font-semibold">{symptomData.name}</h4>
+                                  <p className="text-sm">{symptomData.description}</p>
+                                  <Badge variant="outline" className="text-xs">
+                                    Category: {symptomData.category}
+                                  </Badge>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          );
+                        })}
                       </div>
                       
                       {filteredSymptomsData.length === 0 && (

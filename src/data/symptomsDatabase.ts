@@ -182,7 +182,6 @@ export const symptomsDatabase: SymptomInfo[] = [
   { name: "Range of motion loss", description: "Reduced joint movement", category: "Musculoskeletal" },
   { name: "Muscle atrophy", description: "Muscle wasting or shrinkage", category: "Musculoskeletal" },
   { name: "Muscle fatigue", description: "Muscles tiring easily", category: "Musculoskeletal" },
-  { name: "Exercise intolerance", description: "Difficulty with physical activity", category: "Musculoskeletal" },
   { name: "Morning stiffness", description: "Stiffness upon waking", category: "Musculoskeletal" },
   { name: "Chronic pain", description: "Long-lasting pain", category: "Musculoskeletal" },
   { name: "Sharp pain", description: "Sudden, intense pain", category: "Musculoskeletal" },
