@@ -1,9 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Stethoscope, Menu } from "lucide-react";
+import { useState } from "react";
 
 const Header = () => {
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -44,9 +47,44 @@ const Header = () => {
           </nav>
           
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <div className="flex flex-col space-y-4 mt-8">
+                  <Link 
+                    to="/" 
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg font-medium transition-colors hover:text-primary ${
+                      isActive('/') ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                  >
+                    Home
+                  </Link>
+                  <Link 
+                    to="/predict" 
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg font-medium transition-colors hover:text-primary ${
+                      isActive('/predict') ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                  >
+                    Symptom Checker
+                  </Link>
+                  <Link 
+                    to="/about" 
+                    onClick={() => setIsOpen(false)}
+                    className={`text-lg font-medium transition-colors hover:text-primary ${
+                      isActive('/about') ? 'text-primary' : 'text-muted-foreground'
+                    }`}
+                  >
+                    About Us
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>

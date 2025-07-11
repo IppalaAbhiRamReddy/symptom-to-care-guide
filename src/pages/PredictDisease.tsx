@@ -313,9 +313,16 @@ const PredictDisease = () => {
                     </Button>
                     
                     {!modelInitialized && (
-                      <p className="text-sm text-muted-foreground text-center">
-                        Loading Enhanced Medical Diagnosis ML Model with advanced accuracy algorithms...
-                      </p>
+                      <div className="text-center space-y-2">
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="animate-pulse w-2 h-2 bg-primary rounded-full"></div>
+                          <div className="animate-pulse w-2 h-2 bg-primary rounded-full" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="animate-pulse w-2 h-2 bg-primary rounded-full" style={{ animationDelay: '0.4s' }}></div>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Loading Enhanced Medical Diagnosis ML Model with advanced accuracy algorithms...
+                        </p>
+                      </div>
                     )}
                   </CardContent>
                 </Card>

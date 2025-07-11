@@ -1,14 +1,18 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: /sitemap.xml
+
+# Important pages
+Allow: /
+Allow: /predict
+Allow: /about
+
+# Block sensitive or unnecessary paths
+Disallow: /admin/
+Disallow: /*.json$
+Disallow: /api/
+
+# Crawl delay
+Crawl-delay: 1
