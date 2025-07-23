@@ -157,9 +157,15 @@ const About = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  📧 Email: <a href="mailto:22BQ1A4261@vvit.net" className="text-primary hover:underline">22BQ1A4261@vvit.net</a>
-                </p>
+                <div className="space-y-2 text-muted-foreground">
+                  <p className="font-semibold mb-3">📧 Contact Emails:</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <a href="mailto:22BQ1A4261@vvit.net" className="text-primary hover:underline">22BQ1A4261@vvit.net</a>
+                    <a href="mailto:22BQ1A42B3@vvit.net" className="text-primary hover:underline">22BQ1A42B3@vvit.net</a>
+                    <a href="mailto:22BQ1A42B7@vvit.net" className="text-primary hover:underline">22BQ1A42B7@vvit.net</a>
+                    <a href="mailto:22BQ1A42B8@vvit.net" className="text-primary hover:underline">22BQ1A42B8@vvit.net</a>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
