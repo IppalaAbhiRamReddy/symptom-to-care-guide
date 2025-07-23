@@ -16,12 +16,6 @@ import { useToast } from "@/hooks/use-toast";
 // Initialize Enhanced ML Model
 let enhancedMLModel: EnhancedMedicalDiagnosisModel | null = null;
 
-// Enhanced symptom interface
-interface SelectedSymptom {
-  name: string;
-  severity: 'mild' | 'moderate' | 'severe';
-  duration: string;
-}
 
 // Educational content
 const educationalContent = {
@@ -43,18 +37,15 @@ const educationalContent = {
 };
 
 const PredictDisease = () => {
-  const [selectedSymptoms, setSelectedSymptoms] = useState<SelectedSymptom[]>([]);
+  const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [modelInitialized, setModelInitialized] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [urgencyFilter, setUrgencyFilter] = useState<string>("All");
-  const [recentSymptoms, setRecentSymptoms] = useState<string[]>([]);
-  const [suggestedSymptoms, setSuggestedSymptoms] = useState<string[]>([]);
   const { toast } = useToast();
 
-  // Initialize the Enhanced ML Model and load recent symptoms
+  // Initialize the Enhanced ML Model
   useEffect(() => {
     const initializeModel = () => {
       try {
@@ -70,95 +61,29 @@ const PredictDisease = () => {
       }
     };
 
-    // Load recent symptoms from localStorage
-    const loadRecentSymptoms = () => {
-      const stored = localStorage.getItem('recentSymptoms');
-      if (stored) {
-        setRecentSymptoms(JSON.parse(stored));
-      }
-    };
-
     initializeModel();
-    loadRecentSymptoms();
   }, []);
 
-  // Update suggested symptoms based on current selection
-  useEffect(() => {
-    if (selectedSymptoms.length > 0) {
-      const currentSymptomNames = selectedSymptoms.map(s => s.name);
-      const categories = [...new Set(currentSymptomNames.map(name => 
-        symptomsDatabase.find(s => s.name === name)?.category
-      ))];
-      
-      const suggestions = symptomsDatabase
-        .filter(s => 
-          categories.includes(s.category) && 
-          !currentSymptomNames.includes(s.name)
-        )
-        .slice(0, 6)
-        .map(s => s.name);
-      
-      setSuggestedSymptoms(suggestions);
-    } else {
-      setSuggestedSymptoms([]);
-    }
-  }, [selectedSymptoms]);
-
-  // Get unique categories and urgency levels
+  // Get unique categories
   const categories = ["All", ...Array.from(new Set(symptomsDatabase.map(s => s.category)))];
-  const urgencyLevels = ["All", "Low", "Medium", "High"];
 
-  // Map symptoms to urgency levels (this could be moved to database)
-  const getSymptomUrgency = (symptomName: string): string => {
-    const urgentSymptoms = ["Chest pain", "Difficulty breathing", "Severe headache", "High fever"];
-    const moderateSymptoms = ["Persistent cough", "Abdominal pain", "Dizziness", "Nausea"];
-    
-    if (urgentSymptoms.some(s => symptomName.toLowerCase().includes(s.toLowerCase()))) return "High";
-    if (moderateSymptoms.some(s => symptomName.toLowerCase().includes(s.toLowerCase()))) return "Medium";
-    return "Low";
-  };
-
-  // Filter symptoms based on search term, category, and urgency
+  // Filter symptoms based on search term and category
   const filteredSymptomsData = symptomsDatabase.filter(symptomData => {
     const matchesSearch = symptomData.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          symptomData.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "All" || symptomData.category === selectedCategory;
-    const matchesUrgency = urgencyFilter === "All" || getSymptomUrgency(symptomData.name) === urgencyFilter;
-    return matchesSearch && matchesCategory && matchesUrgency;
+    return matchesSearch && matchesCategory;
   });
 
   const handleSymptomToggle = (symptom: string) => {
     setSelectedSymptoms(prev => {
-      const existing = prev.find(s => s.name === symptom);
-      if (existing) {
-        return prev.filter(s => s.name !== symptom);
+      if (prev.includes(symptom)) {
+        return prev.filter(s => s !== symptom);
       } else if (prev.length < 4) {
-        // Add new symptom with default values
-        const newSymptom: SelectedSymptom = {
-          name: symptom,
-          severity: 'mild',
-          duration: 'few_days'
-        };
-        
-        // Save to recent symptoms
-        const updatedRecent = [symptom, ...recentSymptoms.filter(s => s !== symptom)].slice(0, 10);
-        setRecentSymptoms(updatedRecent);
-        localStorage.setItem('recentSymptoms', JSON.stringify(updatedRecent));
-        
-        return [...prev, newSymptom];
+        return [...prev, symptom];
       }
       return prev;
     });
-  };
-
-  const updateSymptomDetails = (symptomName: string, field: 'severity' | 'duration', value: string) => {
-    setSelectedSymptoms(prev => 
-      prev.map(s => 
-        s.name === symptomName 
-          ? { ...s, [field]: value }
-          : s
-      )
-    );
   };
 
   const handlePredict = () => {
@@ -176,8 +101,7 @@ const PredictDisease = () => {
     // Simulate processing time for better UX
     setTimeout(() => {
       try {
-        const symptomNames = selectedSymptoms.map(s => s.name);
-        const result = enhancedMLModel!.predict(symptomNames);
+        const result = enhancedMLModel!.predict(selectedSymptoms);
         setPrediction(result);
         console.log("Prediction made with confidence:", result.confidence);
         
@@ -213,8 +137,6 @@ const PredictDisease = () => {
     setPrediction(null);
     setSearchTerm("");
     setSelectedCategory("All");
-    setUrgencyFilter("All");
-    setSuggestedSymptoms([]);
   };
 
   return (
@@ -281,100 +203,29 @@ const PredictDisease = () => {
                         className="w-full text-lg"
                       />
                       
-                      {/* Advanced Filters */}
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Category Filter</label>
-                          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categories.map((category) => (
-                                <SelectItem key={category} value={category}>
-                                  {category}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <label className="text-sm font-medium mb-2 block">Urgency Level</label>
-                          <Select value={urgencyFilter} onValueChange={setUrgencyFilter}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select urgency" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {urgencyLevels.map((level) => (
-                                <SelectItem key={level} value={level}>
-                                  {level}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
+                      {/* Category Filter */}
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Category Filter</label>
+                        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories.map((category) => (
+                              <SelectItem key={category} value={category}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-
-                      {/* Recent & Suggested Symptoms */}
-                      {(recentSymptoms.length > 0 || suggestedSymptoms.length > 0) && (
-                        <div className="space-y-3">
-                          {recentSymptoms.length > 0 && (
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Clock className="h-4 w-4" />
-                                <span className="text-sm font-medium">Recently Used</span>
-                              </div>
-                              <div className="flex flex-wrap gap-2">
-                                {recentSymptoms.slice(0, 5).map((symptom) => (
-                                  <Button
-                                    key={symptom}
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleSymptomToggle(symptom)}
-                                    className="text-xs"
-                                    disabled={selectedSymptoms.some(s => s.name === symptom)}
-                                  >
-                                    <Star className="h-3 w-3 mr-1" />
-                                    {symptom}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {suggestedSymptoms.length > 0 && (
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <TrendingUp className="h-4 w-4" />
-                                <span className="text-sm font-medium">Related Symptoms</span>
-                              </div>
-                              <div className="flex flex-wrap gap-2">
-                                {suggestedSymptoms.map((symptom) => (
-                                  <Button
-                                    key={symptom}
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleSymptomToggle(symptom)}
-                                    className="text-xs bg-primary/5 hover:bg-primary/10"
-                                  >
-                                    {symptom}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
                     
                     {/* Symptoms Grid */}
                     <div className="max-h-96 overflow-y-auto">
                       <div className="grid gap-3 md:grid-cols-2">
                         {filteredSymptomsData.map((symptomData, index) => {
-                          const isSelected = selectedSymptoms.some(s => s.name === symptomData.name);
-                          const urgencyLevel = getSymptomUrgency(symptomData.name);
-                          const urgencyColor = urgencyLevel === 'High' ? 'text-red-600' : 
-                                             urgencyLevel === 'Medium' ? 'text-orange-600' : 'text-green-600';
+                          const isSelected = selectedSymptoms.includes(symptomData.name);
                           
                           return (
                             <Tooltip key={`${symptomData.name}-${symptomData.category}-${index}`}>
@@ -402,12 +253,6 @@ const PredictDisease = () => {
                                         }`}>
                                           {symptomData.name}
                                         </h3>
-                                        <Badge 
-                                          variant="outline" 
-                                          className={`text-xs px-1 py-0 ${urgencyColor} border-current`}
-                                        >
-                                          {urgencyLevel}
-                                        </Badge>
                                       </div>
                                       <p className={`text-xs mt-2 line-clamp-2 transition-colors duration-300 ${
                                         isSelected 
@@ -443,9 +288,6 @@ const PredictDisease = () => {
                                     <Badge variant="outline" className="text-xs">
                                       Category: {symptomData.category}
                                     </Badge>
-                                    <Badge variant="outline" className={`text-xs ${urgencyColor}`}>
-                                      {urgencyLevel} Priority
-                                    </Badge>
                                   </div>
                                 </div>
                               </TooltipContent>
@@ -475,63 +317,21 @@ const PredictDisease = () => {
                           </div>
                         </div>
                         
-                        <div className="space-y-3">
-                          {selectedSymptoms.map((symptom) => (
-                            <Card key={symptom.name} className="p-4">
-                              <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                  <h4 className="font-medium">{symptom.name}</h4>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    onClick={() => handleSymptomToggle(symptom.name)}
-                                    className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                                  >
-                                    ×
-                                  </Button>
-                                </div>
-                                
-                                <div className="grid grid-cols-2 gap-3">
-                                  <div>
-                                    <label className="text-xs font-medium mb-1 block">Severity</label>
-                                    <Select 
-                                      value={symptom.severity} 
-                                      onValueChange={(value) => updateSymptomDetails(symptom.name, 'severity', value)}
-                                    >
-                                      <SelectTrigger className="h-8">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="mild">Mild</SelectItem>
-                                        <SelectItem value="moderate">Moderate</SelectItem>
-                                        <SelectItem value="severe">Severe</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  <div>
-                                    <label className="text-xs font-medium mb-1 block">Duration</label>
-                                    <Select 
-                                      value={symptom.duration} 
-                                      onValueChange={(value) => updateSymptomDetails(symptom.name, 'duration', value)}
-                                    >
-                                      <SelectTrigger className="h-8">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="few_hours">Few hours</SelectItem>
-                                        <SelectItem value="few_days">Few days</SelectItem>
-                                        <SelectItem value="week">About a week</SelectItem>
-                                        <SelectItem value="weeks">Several weeks</SelectItem>
-                                        <SelectItem value="chronic">Chronic (months+)</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-                              </div>
-                            </Card>
-                          ))}
-                        </div>
+                         <div className="space-y-2">
+                           {selectedSymptoms.map((symptom) => (
+                             <div key={symptom} className="flex items-center justify-between bg-background p-2 rounded border">
+                               <span className="font-medium">{symptom}</span>
+                               <Button
+                                 variant="ghost"
+                                 size="sm"
+                                 onClick={() => handleSymptomToggle(symptom)}
+                                 className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
+                               >
+                                 ×
+                               </Button>
+                             </div>
+                           ))}
+                         </div>
                       </div>
                     )}
 
