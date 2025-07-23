@@ -2,25 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BookOpen, Users, Brain, Shield, Code, Mail, Heart } from "lucide-react";
 import Header from "@/components/Header";
-
 const About = () => {
-  const highlights = [
-    "250+ Symptoms",
-    "200+ Diseases", 
-    "150+ Doctor Specializations",
-    "Medicine Suggestions",
-    "Local Execution — 100% Secure, No Data Collection"
-  ];
-
-  const technologies = [
-    "Python 3.11+",
-    "Streamlit",
-    "Rule-based symptom-to-disease mapping",
-    "Static data dictionaries and mapping logic"
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-subtle">
+  const highlights = ["250+ Symptoms", "200+ Diseases", "150+ Doctor Specializations", "Medicine Suggestions", "Local Execution — 100% Secure, No Data Collection"];
+  const technologies = ["Python 3.11+", "Streamlit", "Rule-based symptom-to-disease mapping", "Static data dictionaries and mapping logic"];
+  return <div className="min-h-screen bg-gradient-subtle">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
@@ -75,11 +60,9 @@ const About = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {highlights.map((highlight, index) => (
-                    <Badge key={index} variant="secondary" className="text-sm p-3 justify-start">
+                  {highlights.map((highlight, index) => <Badge key={index} variant="secondary" className="text-sm p-3 justify-start">
                       ✅ {highlight}
-                    </Badge>
-                  ))}
+                    </Badge>)}
                 </div>
               </CardContent>
             </Card>
@@ -115,22 +98,7 @@ const About = () => {
             </Card>
 
             {/* Technologies */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Code className="h-6 w-6 text-primary" />
-                  Technologies Used
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Badge variant="outline" className="p-3 justify-center">React</Badge>
-                  <Badge variant="outline" className="p-3 justify-center">TypeScript</Badge>
-                  <Badge variant="outline" className="p-3 justify-center">Tailwind CSS</Badge>
-                  <Badge variant="outline" className="p-3 justify-center">Rule-based AI mapping</Badge>
-                </div>
-              </CardContent>
-            </Card>
+            
 
             {/* Team */}
             <Card>
@@ -189,8 +157,6 @@ const About = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default About;
