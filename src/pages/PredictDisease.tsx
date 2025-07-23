@@ -3,38 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Brain, User, Activity, ChevronRight, Info, Stethoscope, AlertCircle, Clock, Filter, BookOpen, Star, TrendingUp, Shield } from "lucide-react";
+import { Search, Brain, User, Activity, ChevronRight, Info, Stethoscope, AlertCircle } from "lucide-react";
 import Header from "@/components/Header";
 import { symptomsDatabase, symptoms } from "@/data/symptomsDatabase";
 import { EnhancedMedicalDiagnosisModel, PredictionResult } from "@/utils/improvedMLModel";
 import { trainingData, validateTrainingData } from "@/data/trainingData";
-import { useToast } from "@/hooks/use-toast";
 
 // Initialize Enhanced ML Model
 let enhancedMLModel: EnhancedMedicalDiagnosisModel | null = null;
-
-
-// Educational content
-const educationalContent = {
-  "Common Cold": {
-    description: "A viral infection of the upper respiratory tract that's very common and usually harmless.",
-    prevention: ["Wash hands frequently", "Avoid close contact with sick people", "Don't touch face with unwashed hands", "Get adequate sleep"],
-    relatedSymptoms: ["Runny nose", "Sore throat", "Cough", "Headache"]
-  },
-  "Migraine": {
-    description: "A neurological condition that can cause severe headaches along with other symptoms.",
-    prevention: ["Maintain regular sleep schedule", "Stay hydrated", "Manage stress", "Avoid known triggers"],
-    relatedSymptoms: ["Severe headache", "Nausea", "Light sensitivity", "Sound sensitivity"]
-  },
-  "Influenza": {
-    description: "A viral infection that attacks your respiratory system with sudden onset of symptoms.",
-    prevention: ["Get annual flu vaccine", "Wash hands regularly", "Avoid crowded places during flu season", "Maintain good health habits"],
-    relatedSymptoms: ["Fever", "Body aches", "Fatigue", "Cough", "Headache"]
-  }
-};
 
 const PredictDisease = () => {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -43,7 +20,6 @@ const PredictDisease = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modelInitialized, setModelInitialized] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const { toast } = useToast();
 
   // Initialize the Enhanced ML Model
   useEffect(() => {
@@ -76,14 +52,11 @@ const PredictDisease = () => {
   });
 
   const handleSymptomToggle = (symptom: string) => {
-    setSelectedSymptoms(prev => {
-      if (prev.includes(symptom)) {
-        return prev.filter(s => s !== symptom);
-      } else if (prev.length < 4) {
-        return [...prev, symptom];
-      }
-      return prev;
-    });
+    setSelectedSymptoms(prev => 
+      prev.includes(symptom) 
+        ? prev.filter(s => s !== symptom)
+        : prev.length < 4 ? [...prev, symptom] : prev
+    );
   };
 
   const handlePredict = () => {
@@ -104,11 +77,6 @@ const PredictDisease = () => {
         const result = enhancedMLModel!.predict(selectedSymptoms);
         setPrediction(result);
         console.log("Prediction made with confidence:", result.confidence);
-        
-        toast({
-          title: "Analysis Complete",
-          description: `Diagnosis: ${result.disease} (${result.confidence}% confidence)`,
-        });
       } catch (error) {
         console.error("Error making prediction:", error);
         // Fallback prediction
@@ -120,12 +88,6 @@ const PredictDisease = () => {
             description: "Please consult a healthcare professional for proper diagnosis."
           },
           medicines: ["Consult doctor", "Monitor symptoms", "Rest"]
-        });
-        
-        toast({
-          title: "Analysis Error",
-          description: "Unable to provide diagnosis. Please consult a healthcare professional.",
-          variant: "destructive",
         });
       }
       setIsLoading(false);
@@ -204,20 +166,18 @@ const PredictDisease = () => {
                       />
                       
                       {/* Category Filter */}
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Category Filter</label>
-                        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="flex flex-wrap gap-2">
+                        {categories.map((category) => (
+                          <Button
+                            key={category}
+                            variant={selectedCategory === category ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedCategory(category)}
+                            className="text-xs"
+                          >
+                            {category}
+                          </Button>
+                        ))}
                       </div>
                     </div>
                     
@@ -226,7 +186,6 @@ const PredictDisease = () => {
                       <div className="grid gap-3 md:grid-cols-2">
                         {filteredSymptomsData.map((symptomData, index) => {
                           const isSelected = selectedSymptoms.includes(symptomData.name);
-                          
                           return (
                             <Tooltip key={`${symptomData.name}-${symptomData.category}-${index}`}>
                               <TooltipTrigger asChild>
@@ -284,11 +243,9 @@ const PredictDisease = () => {
                                 <div className="space-y-2">
                                   <h4 className="font-semibold">{symptomData.name}</h4>
                                   <p className="text-sm">{symptomData.description}</p>
-                                  <div className="flex gap-2">
-                                    <Badge variant="outline" className="text-xs">
-                                      Category: {symptomData.category}
-                                    </Badge>
-                                  </div>
+                                  <Badge variant="outline" className="text-xs">
+                                    Category: {symptomData.category}
+                                  </Badge>
                                 </div>
                               </TooltipContent>
                             </Tooltip>
@@ -304,9 +261,9 @@ const PredictDisease = () => {
                       )}
                     </div>
 
-                    {/* Selected Symptoms with Enhanced Details */}
+                    {/* Selected Symptoms */}
                     {selectedSymptoms.length > 0 && (
-                      <div className="space-y-4 pt-4 border-t">
+                      <div className="space-y-3 pt-4 border-t">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-lg">Selected Symptoms ({selectedSymptoms.length})</h3>
                           <div className="flex items-center gap-2">
@@ -316,22 +273,18 @@ const PredictDisease = () => {
                             </Button>
                           </div>
                         </div>
-                        
-                         <div className="space-y-2">
-                           {selectedSymptoms.map((symptom) => (
-                             <div key={symptom} className="flex items-center justify-between bg-background p-2 rounded border">
-                               <span className="font-medium">{symptom}</span>
-                               <Button
-                                 variant="ghost"
-                                 size="sm"
-                                 onClick={() => handleSymptomToggle(symptom)}
-                                 className="h-6 w-6 p-0 hover:bg-destructive/10 hover:text-destructive"
-                               >
-                                 ×
-                               </Button>
-                             </div>
-                           ))}
-                         </div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedSymptoms.map((symptom) => (
+                            <Badge 
+                              key={symptom}
+                              variant="secondary"
+                              className="cursor-pointer px-3 py-1 hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                              onClick={() => handleSymptomToggle(symptom)}
+                            >
+                              {symptom} ×
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
                     )}
 
@@ -413,54 +366,6 @@ const PredictDisease = () => {
                           <p className="text-muted-foreground">
                             Based on your {selectedSymptoms.length} selected symptoms, our Enhanced Medical ML Model suggests this is the most likely condition.
                           </p>
-                          
-                          {/* Educational Content */}
-                          {educationalContent[prediction.disease as keyof typeof educationalContent] && (
-                            <Tabs defaultValue="info" className="mt-4">
-                              <TabsList className="grid w-full grid-cols-2">
-                                <TabsTrigger value="info" className="text-xs">
-                                  <BookOpen className="h-3 w-3 mr-1" />
-                                  Info
-                                </TabsTrigger>
-                                <TabsTrigger value="prevention" className="text-xs">
-                                  <Shield className="h-3 w-3 mr-1" />
-                                  Prevention
-                                </TabsTrigger>
-                              </TabsList>
-                              
-                              <TabsContent value="info" className="mt-3">
-                                <div className="p-3 bg-muted rounded-lg">
-                                  <p className="text-sm text-muted-foreground">
-                                    {educationalContent[prediction.disease as keyof typeof educationalContent].description}
-                                  </p>
-                                  <div className="mt-3">
-                                    <h5 className="text-xs font-medium mb-2">Related Symptoms:</h5>
-                                    <div className="flex flex-wrap gap-1">
-                                      {educationalContent[prediction.disease as keyof typeof educationalContent].relatedSymptoms.map((symptom) => (
-                                        <Badge key={symptom} variant="outline" className="text-xs">
-                                          {symptom}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </div>
-                              </TabsContent>
-                              
-                              <TabsContent value="prevention" className="mt-3">
-                                <div className="p-3 bg-muted rounded-lg">
-                                  <h5 className="text-xs font-medium mb-2">Prevention Tips:</h5>
-                                  <ul className="space-y-1">
-                                    {educationalContent[prediction.disease as keyof typeof educationalContent].prevention.map((tip, index) => (
-                                      <li key={index} className="text-xs text-muted-foreground flex items-start gap-2">
-                                        <div className="w-1 h-1 bg-primary rounded-full mt-1.5 flex-shrink-0" />
-                                        {tip}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </TabsContent>
-                            </Tabs>
-                          )}
                         </div>
                       </CardContent>
                     </Card>
