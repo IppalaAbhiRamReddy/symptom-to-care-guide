@@ -366,6 +366,55 @@ const PredictDisease = () => {
                           <p className="text-muted-foreground">
                             Based on your {selectedSymptoms.length} selected symptoms, our Enhanced Medical ML Model suggests this is the most likely condition.
                           </p>
+                          
+                          {/* Disease Information */}
+                          {prediction.info && (
+                            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2 flex items-center gap-2">
+                                <Info className="h-4 w-4" />
+                                About This Condition
+                              </h4>
+                              <p className="text-sm text-blue-800 dark:text-blue-200">
+                                {prediction.info}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {/* Basic Treatments */}
+                          {prediction.medicines && prediction.medicines.length > 0 && (
+                            <div className="mt-4">
+                              <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                                <Stethoscope className="h-4 w-4" />
+                                Basic Treatment Options
+                              </h4>
+                              <div className="grid gap-2">
+                                {prediction.medicines.map((medicine, index) => (
+                                  <div key={index} className="flex items-center gap-3 p-2 bg-muted/50 rounded-md">
+                                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                                    <span className="text-sm text-foreground">{medicine}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Prevention Tips */}
+                          {prediction.prevention && prediction.prevention.length > 0 && (
+                            <div className="mt-4 p-4 bg-green-50 dark:bg-green-950/30 rounded-lg border border-green-200 dark:border-green-800">
+                              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-3 flex items-center gap-2">
+                                <Activity className="h-4 w-4" />
+                                Prevention Tips
+                              </h4>
+                              <div className="grid gap-2">
+                                {prediction.prevention.map((tip, index) => (
+                                  <div key={index} className="flex items-start gap-3">
+                                    <div className="w-1.5 h-1.5 bg-green-600 dark:bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-sm text-green-800 dark:text-green-200">{tip}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

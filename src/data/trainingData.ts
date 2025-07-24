@@ -149,7 +149,97 @@ export const trainingData: TrainingData[] = [
   
   // Skin conditions
   { symptoms: ["Eczema", "Itching", "Red patches", "Dry skin"], disease: "Atopic Dermatitis", confidence: 88 },
-  { symptoms: ["Psoriasis", "Scaly patches", "Itching", "Joint pain"], disease: "Psoriatic Arthritis", confidence: 85 }
+  { symptoms: ["Psoriasis", "Scaly patches", "Itching", "Joint pain"], disease: "Psoriatic Arthritis", confidence: 85 },
+  
+  // Additional comprehensive training data for improved accuracy
+  
+  // Enhanced Common Cold patterns
+  { symptoms: ["Runny nose", "Sneezing", "Mild fever", "Throat irritation"], disease: "Common Cold", confidence: 76 },
+  { symptoms: ["Nasal congestion", "Watery eyes", "Cough", "Mild fatigue"], disease: "Common Cold", confidence: 74 },
+  { symptoms: ["Post-nasal drip", "Throat clearing", "Mild headache"], disease: "Common Cold", confidence: 70 },
+  
+  // Enhanced Influenza patterns
+  { symptoms: ["High fever", "Severe muscle aches", "Extreme fatigue", "Dry cough"], disease: "Influenza", confidence: 94 },
+  { symptoms: ["Fever", "Body aches", "Headache", "Loss of appetite"], disease: "Influenza", confidence: 86 },
+  { symptoms: ["Chills", "Weakness", "Nasal congestion", "Sore throat"], disease: "Influenza", confidence: 82 },
+  
+  // Additional Respiratory Conditions
+  { symptoms: ["Persistent cough", "Phlegm production", "Shortness of breath"], disease: "Bronchitis", confidence: 85 },
+  { symptoms: ["Chronic cough", "Morning phlegm", "Wheezing", "Chest tightness"], disease: "Bronchitis", confidence: 88 },
+  { symptoms: ["Sore throat", "Difficulty swallowing", "Swollen tonsils", "Fever"], disease: "Tonsillitis", confidence: 90 },
+  { symptoms: ["Severe sore throat", "White patches on tonsils", "Bad breath"], disease: "Tonsillitis", confidence: 87 },
+  
+  // Gastrointestinal Conditions
+  { symptoms: ["Stomach pain", "Diarrhea", "Nausea", "Vomiting"], disease: "Gastroenteritis", confidence: 88 },
+  { symptoms: ["Watery diarrhea", "Cramping", "Fever", "Dehydration"], disease: "Gastroenteritis", confidence: 90 },
+  { symptoms: ["Food poisoning", "Severe nausea", "Vomiting", "Abdominal cramps"], disease: "Food Poisoning", confidence: 92 },
+  { symptoms: ["Acid reflux", "Heartburn", "Chest burning", "Regurgitation"], disease: "GERD", confidence: 85 },
+  { symptoms: ["Persistent heartburn", "Sour taste", "Difficulty swallowing"], disease: "GERD", confidence: 87 },
+  
+  // Musculoskeletal Conditions
+  { symptoms: ["Lower back pain", "Muscle stiffness", "Limited mobility", "Pain radiating to legs"], disease: "Lower Back Pain", confidence: 82 },
+  { symptoms: ["Neck pain", "Muscle tension", "Headache", "Limited neck movement"], disease: "Neck Strain", confidence: 80 },
+  { symptoms: ["Shoulder pain", "Limited range of motion", "Muscle weakness"], disease: "Shoulder Impingement", confidence: 78 },
+  { symptoms: ["Knee pain", "Swelling", "Stiffness", "Difficulty walking"], disease: "Knee Arthritis", confidence: 83 },
+  { symptoms: ["Hip pain", "Stiffness", "Difficulty standing", "Limping"], disease: "Hip Arthritis", confidence: 84 },
+  
+  // Mental Health Conditions
+  { symptoms: ["Persistent sadness", "Loss of interest", "Fatigue", "Sleep disturbances"], disease: "Depression", confidence: 88 },
+  { symptoms: ["Hopelessness", "Guilt", "Concentration problems", "Appetite changes"], disease: "Depression", confidence: 85 },
+  { symptoms: ["Panic attacks", "Heart palpitations", "Sweating", "Trembling"], disease: "Panic Disorder", confidence: 90 },
+  { symptoms: ["Excessive worry", "Restlessness", "Muscle tension", "Sleep problems"], disease: "Generalized Anxiety Disorder", confidence: 87 },
+  { symptoms: ["Social anxiety", "Fear of judgment", "Avoidance behavior", "Blushing"], disease: "Social Anxiety Disorder", confidence: 82 },
+  
+  // Cardiovascular Conditions
+  { symptoms: ["Chest pain", "Shortness of breath", "Arm pain", "Sweating"], disease: "Angina", confidence: 90 },
+  { symptoms: ["Heart palpitations", "Irregular heartbeat", "Dizziness", "Fatigue"], disease: "Arrhythmia", confidence: 85 },
+  { symptoms: ["Leg swelling", "Shortness of breath", "Fatigue", "Rapid heartbeat"], disease: "Heart Failure", confidence: 88 },
+  
+  // Endocrine Conditions
+  { symptoms: ["Excessive thirst", "Frequent urination", "Blurred vision", "Fatigue"], disease: "Diabetes", confidence: 92 },
+  { symptoms: ["Weight gain", "Cold intolerance", "Dry skin", "Hair loss"], disease: "Hypothyroidism", confidence: 86 },
+  { symptoms: ["Weight loss", "Heat intolerance", "Rapid heartbeat", "Nervousness"], disease: "Hyperthyroidism", confidence: 89 },
+  
+  // Neurological Conditions
+  { symptoms: ["Severe headache", "Visual disturbances", "Nausea", "Light sensitivity"], disease: "Migraine", confidence: 90 },
+  { symptoms: ["Tension headache", "Band-like pressure", "Neck stiffness", "Mild nausea"], disease: "Tension Headache", confidence: 78 },
+  { symptoms: ["Dizziness", "Balance problems", "Nausea", "Hearing changes"], disease: "Vertigo", confidence: 84 },
+  { symptoms: ["Memory problems", "Confusion", "Difficulty concentrating", "Mood changes"], disease: "Cognitive Impairment", confidence: 75 },
+  
+  // Infectious Diseases
+  { symptoms: ["Fever", "Rash", "Joint pain", "Fatigue"], disease: "Viral Infection", confidence: 80 },
+  { symptoms: ["Sore throat", "Fever", "Swollen lymph nodes", "White patches"], disease: "Strep Throat", confidence: 88 },
+  { symptoms: ["Ear pain", "Hearing loss", "Discharge", "Fever"], disease: "Ear Infection", confidence: 87 },
+  { symptoms: ["Eye redness", "Discharge", "Itching", "Tearing"], disease: "Conjunctivitis", confidence: 85 },
+  
+  // Dermatological Conditions
+  { symptoms: ["Skin rash", "Itching", "Redness", "Scaling"], disease: "Dermatitis", confidence: 82 },
+  { symptoms: ["Acne", "Blackheads", "Whiteheads", "Skin inflammation"], disease: "Acne Vulgaris", confidence: 88 },
+  { symptoms: ["Fungal infection", "Itching", "Scaling", "Redness"], disease: "Ringworm", confidence: 85 },
+  
+  // Reproductive Health
+  { symptoms: ["Pelvic pain", "Heavy menstrual bleeding", "Painful periods", "Fatigue"], disease: "Endometriosis", confidence: 87 },
+  { symptoms: ["Irregular periods", "Weight gain", "Excess hair growth", "Acne"], disease: "PCOS", confidence: 84 },
+  { symptoms: ["Testicular pain", "Swelling", "Heaviness", "Discomfort"], disease: "Testicular Disorders", confidence: 80 },
+  
+  // Respiratory Allergies
+  { symptoms: ["Sneezing", "Runny nose", "Itchy eyes", "Nasal congestion"], disease: "Allergic Rhinitis", confidence: 89 },
+  { symptoms: ["Seasonal allergies", "Itchy throat", "Watery eyes", "Fatigue"], disease: "Hay Fever", confidence: 86 },
+  
+  // Sleep Disorders
+  { symptoms: ["Insomnia", "Difficulty falling asleep", "Frequent awakening", "Daytime fatigue"], disease: "Sleep Disorder", confidence: 82 },
+  { symptoms: ["Loud snoring", "Gasping during sleep", "Daytime sleepiness", "Morning headaches"], disease: "Sleep Apnea", confidence: 88 },
+  
+  // Autoimmune Conditions
+  { symptoms: ["Joint pain", "Skin rash", "Fatigue", "Fever"], disease: "Lupus", confidence: 83 },
+  { symptoms: ["Joint swelling", "Morning stiffness", "Symmetrical pain", "Fatigue"], disease: "Rheumatoid Arthritis", confidence: 87 },
+  { symptoms: ["Muscle weakness", "Fatigue", "Difficulty climbing stairs", "Rash"], disease: "Myositis", confidence: 78 },
+  
+  // Additional common symptoms combinations
+  { symptoms: ["Headache", "Fever", "Muscle aches", "Fatigue"], disease: "Viral Syndrome", confidence: 75 },
+  { symptoms: ["Cough", "Fever", "Fatigue", "Body aches"], disease: "Upper Respiratory Infection", confidence: 78 },
+  { symptoms: ["Abdominal pain", "Bloating", "Gas", "Irregular bowel movements"], disease: "IBS", confidence: 80 },
+  { symptoms: ["Chronic fatigue", "Widespread pain", "Sleep problems", "Cognitive issues"], disease: "Chronic Fatigue Syndrome", confidence: 76 }
 ];
 
 // Validate training data
