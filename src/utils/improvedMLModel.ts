@@ -98,75 +98,164 @@ export class EnhancedMedicalDiagnosisModel {
 
   private calculateDiseaseScore(disease: string, inputSymptoms: string[]): number {
     const diseaseSymptoms = this.diseaseSymptomMatrix.get(disease);
-    if (!diseaseSymptoms) return 0;
+    if (!diseaseSymptoms) return -Infinity;
 
     const diseaseFreq = this.diseaseFrequency.get(disease) || 0;
     const diseasePrior = diseaseFreq / this.totalSamples;
 
-    // Calculate symptom likelihood with improved weighting
+    // Calculate symptom likelihood with enhanced accuracy
     let symptomScore = 0;
     let matchedSymptoms = 0;
+    let specificitySum = 0;
+    let commonSymptomPenalty = 0;
 
     inputSymptoms.forEach(symptom => {
       if (this.allSymptoms.has(symptom)) {
         const symptomInDisease = diseaseSymptoms.get(symptom) || 0;
         const totalSymptomOccurrences = this.symptomFrequency.get(symptom) || 1;
         
-        // Calculate conditional probability with Laplace smoothing
-        const conditionalProb = (symptomInDisease + 1) / (diseaseFreq + this.allSymptoms.size);
-        
-        // Calculate specificity (how specific this symptom is to this disease)
+        // Calculate specificity (how unique this symptom is to this disease)
         const specificity = symptomInDisease / totalSymptomOccurrences;
+        specificitySum += specificity;
         
-        // Weight by both probability and specificity
-        const weightedScore = conditionalProb * (1 + specificity);
-        symptomScore += Math.log(weightedScore);
+        // Penalize very common symptoms that appear in many diseases
+        const symptomCommonness = totalSymptomOccurrences / this.totalSamples;
+        if (symptomCommonness > 0.3) { // If symptom appears in >30% of cases
+          commonSymptomPenalty += (symptomCommonness - 0.3) * 2;
+        }
         
         if (symptomInDisease > 0) {
+          // Calculate conditional probability with enhanced Laplace smoothing
+          const conditionalProb = (symptomInDisease + 0.5) / (diseaseFreq + this.allSymptoms.size * 0.5);
+          
+          // Weight by specificity and conditional probability
+          const importance = specificity * 2 + (1 - symptomCommonness);
+          const weightedScore = Math.log(conditionalProb) * importance;
+          
+          symptomScore += weightedScore;
           matchedSymptoms++;
+        } else {
+          // Penalty for symptoms not associated with this disease
+          symptomScore -= 1.5;
         }
+      } else {
+        // Penalty for unknown symptoms
+        symptomScore -= 0.5;
       }
     });
 
-    // Penalize for unmatched symptoms
+    // Require minimum evidence for confident predictions
+    if (matchedSymptoms === 0) return -Infinity;
+    
+    // Calculate match quality
     const matchRatio = matchedSymptoms / inputSymptoms.length;
-    const finalScore = Math.log(diseasePrior) + symptomScore + Math.log(matchRatio + 0.1);
+    const avgSpecificity = matchedSymptoms > 0 ? specificitySum / matchedSymptoms : 0;
+    
+    // Enhanced scoring with multiple factors
+    let finalScore = Math.log(diseasePrior) + symptomScore;
+    
+    // Boost for high specificity symptoms
+    finalScore += avgSpecificity * 2;
+    
+    // Boost for good match ratio
+    finalScore += Math.log(matchRatio + 0.1) * 1.5;
+    
+    // Apply common symptom penalty
+    finalScore -= commonSymptomPenalty;
+    
+    // Require stronger evidence for single symptoms
+    if (inputSymptoms.length === 1 && avgSpecificity < 0.5) {
+      finalScore -= 3;
+    }
+    
+    // Boost for multiple specific symptoms
+    if (matchedSymptoms >= 3 && avgSpecificity > 0.4) {
+      finalScore += 1.5;
+    }
 
     return finalScore;
   }
 
   private calculateConfidence(score: number, inputSymptoms: string[], predictedDisease: string): number {
-    // Get the disease-specific symptoms
     const diseaseSymptoms = this.diseaseSymptomMatrix.get(predictedDisease);
-    if (!diseaseSymptoms) return 50;
+    if (!diseaseSymptoms) return 35;
 
-    // Calculate how many input symptoms match this disease
+    // Calculate symptom match quality
     const matchedSymptoms = inputSymptoms.filter(symptom => 
       diseaseSymptoms.has(symptom) && (diseaseSymptoms.get(symptom) || 0) > 0
     ).length;
 
-    // Base confidence on match ratio
+    if (matchedSymptoms === 0) return 25;
+
     const matchRatio = matchedSymptoms / inputSymptoms.length;
     
-    // Get disease frequency (more common diseases get slight boost)
-    const diseaseFreq = this.diseaseFrequency.get(predictedDisease) || 0;
-    const popularityBoost = Math.min(10, diseaseFreq / this.totalSamples * 100);
+    // Calculate symptom specificity for this disease
+    let specificitySum = 0;
+    let commonSymptomCount = 0;
     
-    // Calculate confidence
-    let confidence = matchRatio * 70 + popularityBoost + 20;
+    inputSymptoms.forEach(symptom => {
+      if (this.allSymptoms.has(symptom)) {
+        const symptomInDisease = diseaseSymptoms.get(symptom) || 0;
+        const totalSymptomOccurrences = this.symptomFrequency.get(symptom) || 1;
+        const specificity = symptomInDisease / totalSymptomOccurrences;
+        const commonness = totalSymptomOccurrences / this.totalSamples;
+        
+        if (symptomInDisease > 0) {
+          specificitySum += specificity;
+        }
+        
+        if (commonness > 0.3) { // Common symptoms
+          commonSymptomCount++;
+        }
+      }
+    });
+
+    const avgSpecificity = matchedSymptoms > 0 ? specificitySum / matchedSymptoms : 0;
+    const commonSymptomRatio = commonSymptomCount / inputSymptoms.length;
     
-    // Boost confidence for exact matches
-    if (matchRatio === 1.0) {
+    // Base confidence calculation
+    let confidence = 30; // Lower base confidence
+    
+    // Match ratio contribution (max 40 points)
+    confidence += matchRatio * 40;
+    
+    // Specificity contribution (max 25 points)
+    confidence += avgSpecificity * 25;
+    
+    // Penalize high ratio of common symptoms
+    confidence -= commonSymptomRatio * 15;
+    
+    // Bonus for multiple specific symptoms
+    if (matchedSymptoms >= 3 && avgSpecificity > 0.4) {
       confidence += 10;
     }
     
-    // Penalize for very few symptoms
-    if (inputSymptoms.length < 2) {
-      confidence *= 0.8;
+    // Bonus for perfect match with specific symptoms
+    if (matchRatio === 1.0 && avgSpecificity > 0.3) {
+      confidence += 8;
     }
+    
+    // Severe penalty for single common symptoms
+    if (inputSymptoms.length === 1) {
+      if (avgSpecificity < 0.3) {
+        confidence = Math.min(confidence, 40);
+      } else {
+        confidence *= 0.8;
+      }
+    }
+    
+    // Penalty for mostly common symptoms
+    if (commonSymptomRatio > 0.7) {
+      confidence *= 0.7;
+    }
+    
+    // Disease frequency adjustment (smaller effect)
+    const diseaseFreq = this.diseaseFrequency.get(predictedDisease) || 0;
+    const popularityBoost = Math.min(5, diseaseFreq / this.totalSamples * 50);
+    confidence += popularityBoost;
 
     // Ensure confidence is in reasonable range
-    return Math.min(95, Math.max(45, Math.round(confidence)));
+    return Math.min(92, Math.max(25, Math.round(confidence)));
   }
 
   private getDetailedPrediction(disease: string, confidence: number, probabilityScores: { [key: string]: number }): PredictionResult {
